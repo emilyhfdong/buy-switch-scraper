@@ -43,17 +43,14 @@ const sendAllEmails = async (store, isAvailable) => {
 }
 
 const scrapeSite = async (
+  browser,
   { name, url, getIsAvailable },
   storedAvailabilities
 ) => {
   try {
-    logger(name, "launching browser")
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
-    })
     logger(name, "going to", url)
     const page = await browser.newPage()
-    await page.goto(url, { waitUntil: "domcontentloaded" })
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 })
 
     logger(name, "scrapping page")
     const isAvailable = await page.evaluate(getIsAvailable)
@@ -76,12 +73,17 @@ const scrapeSite = async (
   } catch (e) {
     logger(name, "ERROR", e)
   }
+  return
 }
 
 const hi = async () => {
+  console.log("launching browser")
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
+  })
   const storedAvailabilities = await getStoreAvailabilities()
   const scrapeSitePromises = WEBSITES.map((website) =>
-    scrapeSite(website, storedAvailabilities)
+    scrapeSite(browser, website, storedAvailabilities)
   )
   await Promise.all(scrapeSitePromises)
   console.log("Done")

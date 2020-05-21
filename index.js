@@ -1,28 +1,39 @@
 const express = require("express")
+var cors = require("cors")
+
 const app = express()
-var port = process.env.PORT || 3000
+var port = process.env.PORT || 4000
 
 const bodyParser = require("body-parser")
 const { sendWelcomeEmail } = require("./emails")
 const { storeNewEmail } = require("./db")
 
-app.use(express.static(__dirname + "/public"))
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(
+  bodyParser.json({
+    extended: true,
+  })
+)
+app.use(cors())
 
 app.get("/", (req, res) => res.status(201).send())
+
+app.post("/emails", async (req, res) => {
+  console.log("here", req.body)
+  try {
+    if (req.body) {
+      const { email } = req.body
+      console.log("storing new email", email)
+      await storeNewEmail(email)
+      console.log("sending welcome email", email)
+      await sendWelcomeEmail(email)
+    }
+    res.status(201).send()
+  } catch (e) {
+    console.log("error", e)
+    res.status(500).send()
+  }
+})
 
 app.listen(port, () =>
   console.log(`Example listening at http://localhost:${port}`)
 )
-
-app.post("/emails", async (req, res) => {
-  try {
-    if (req.body.email) {
-      await storeNewEmail(req.body.email)
-      await sendWelcomeEmail(req.body.email)
-    }
-    res.status(201).send()
-  } catch (e) {
-    res.status(500).send()
-  }
-})

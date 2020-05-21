@@ -47,7 +47,9 @@ const scrapeSite = async (
   storedAvailabilities
 ) => {
   logger(name, "launching browser")
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  })
   logger(name, "going to", url)
   const page = await browser.newPage()
   await page.goto(url, { waitUntil: "domcontentloaded" })

@@ -87,5 +87,6 @@ const hi = async () => {
   )
   await Promise.all(scrapeSitePromises)
   console.log("Done")
+  process.exit()
 }
 hi()

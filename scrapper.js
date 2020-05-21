@@ -46,31 +46,35 @@ const scrapeSite = async (
   { name, url, getIsAvailable },
   storedAvailabilities
 ) => {
-  logger(name, "launching browser")
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  })
-  logger(name, "going to", url)
-  const page = await browser.newPage()
-  await page.goto(url, { waitUntil: "domcontentloaded" })
+  try {
+    logger(name, "launching browser")
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
+    })
+    logger(name, "going to", url)
+    const page = await browser.newPage()
+    await page.goto(url, { waitUntil: "domcontentloaded" })
 
-  logger(name, "scrapping page")
-  const isAvailable = await page.evaluate(getIsAvailable)
+    logger(name, "scrapping page")
+    const isAvailable = await page.evaluate(getIsAvailable)
 
-  if (storedAvailabilities[name] !== isAvailable) {
-    logger(
-      name,
-      "there was an update! is it now",
-      isAvailable ? "in stock" : "out of stock"
-    )
-    logger(name, "sending email notification")
-    await sendAllEmails({ name, url }, isAvailable, "emilyhfdong@gmail.com")
-  } else {
-    logger(
-      name,
-      "no updates, it is still",
-      isAvailable ? "in stock" : "out of stock"
-    )
+    if (storedAvailabilities[name] !== isAvailable) {
+      logger(
+        name,
+        "there was an update! is it now",
+        isAvailable ? "in stock" : "out of stock"
+      )
+      logger(name, "sending email notification")
+      await sendAllEmails({ name, url }, isAvailable, "emilyhfdong@gmail.com")
+    } else {
+      logger(
+        name,
+        "no updates, it is still",
+        isAvailable ? "in stock" : "out of stock"
+      )
+    }
+  } catch (e) {
+    logger(name, "ERROR", e)
   }
 }
 

@@ -1,0 +1,16 @@
+{
+  "name": "buy-switch-scrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "db.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-admin": "^8.12.1",
+    "node-mailjet": "^3.3.1",
+    "puppeteer": "^3.1.0"
+  }
+}

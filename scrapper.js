@@ -41,7 +41,7 @@ const sendAllEmails = async (store, isAvailable) => {
   )
   await Promise.all(emailPromises)
 }
-//
+
 const scrapeSite = async (
   { name, url, getIsAvailable },
   storedAvailabilities

@@ -2,6 +2,13 @@ const express = require("express")
 const app = express()
 var port = process.env.PORT || 3000
 
+const bodyParser = require("body-parser")
+const { sendWelcomeEmail } = require("./emails")
+const { storeNewEmail } = require("./db")
+
+app.use(express.static(__dirname + "/public"))
+app.use(bodyParser.urlencoded({ extended: true }))
+
 app.get("/", (req, res) => res.status(201).send())
 
 app.listen(port, () =>

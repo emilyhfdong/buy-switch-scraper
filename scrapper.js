@@ -3,12 +3,12 @@ const { getStoreAvailabilities, getUserEmails } = require("./db")
 const { sendNotificationEmail } = require("./emails")
 
 const WEBSITES = [
-  {
-    name: "bestbuy",
-    url:
-      "https://www.bestbuy.ca/en-ca/product/nintendo-switch-console-with-neon-red-blue-joy-con/13817625",
-    getIsAvailable: () => !document.querySelector(`.addToCartButton`).disabled,
-  },
+  // {
+  //   name: "bestbuy",
+  //   url:
+  //     "https://www.bestbuy.ca/en-ca/product/nintendo-switch-console-with-neon-red-blue-joy-con/13817625",
+  //   getIsAvailable: () => !document.querySelector(`.addToCartButton`).disabled,
+  // },
   {
     name: "thesource",
     url:

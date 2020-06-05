@@ -35,10 +35,17 @@ const getStoreAvailabilities = async () => {
   return collection.docs[0].data()
 }
 
+const updateStoreAvailability = async (update) => {
+  const collection = await db.collection("available").get()
+  const docId = collection.docs[0].id
+  await db.collection("available").doc(docId).update(update)
+}
+
 module.exports = {
   getStoredComments,
   storeNewComments,
   getUserEmails,
   storeNewEmail,
   getStoreAvailabilities,
+  updateStoreAvailability,
 }

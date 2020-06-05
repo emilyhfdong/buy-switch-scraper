@@ -1,14 +1,18 @@
 const puppeteer = require("puppeteer")
-const { getStoreAvailabilities, getUserEmails } = require("./db")
+const {
+  getStoreAvailabilities,
+  getUserEmails,
+  updateStoreAvailability,
+} = require("./db")
 const { sendNotificationEmail } = require("./emails")
 
 const WEBSITES = [
-  // {
-  //   name: "bestbuy",
-  //   url:
-  //     "https://www.bestbuy.ca/en-ca/product/nintendo-switch-console-with-neon-red-blue-joy-con/13817625",
-  //   getIsAvailable: () => !document.querySelector(`.addToCartButton`).disabled,
-  // },
+  {
+    name: "bestbuy",
+    url:
+      "https://www.bestbuy.ca/en-ca/product/nintendo-switch-console-with-neon-red-blue-joy-con/13817625",
+    getIsAvailable: () => !document.querySelector(`.addToCartButton`).disabled,
+  },
   {
     name: "thesource",
     url:
@@ -50,7 +54,7 @@ const scrapeSite = async (
   try {
     logger(name, "going to", url)
     const page = await browser.newPage()
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 })
+    await page.goto(url, { waitUntil: "networkidle0", timeout: 0 })
 
     logger(name, "scrapping page")
     const isAvailable = await page.evaluate(getIsAvailable)
@@ -63,6 +67,7 @@ const scrapeSite = async (
       )
       logger(name, "sending email notification")
       await sendAllEmails({ name, url }, isAvailable, "emilyhfdong@gmail.com")
+      await updateStoreAvailability({ [name]: isAvailable })
     } else {
       logger(
         name,

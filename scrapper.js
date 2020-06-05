@@ -81,7 +81,7 @@ const scrapeSite = async (
   return
 }
 
-const hi = async () => {
+const scrapeAllSites = async () => {
   console.log("launching browser")
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
@@ -94,4 +94,4 @@ const hi = async () => {
   console.log("Done")
   process.exit()
 }
-hi()
+scrapeAllSites()

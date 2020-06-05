@@ -6,7 +6,7 @@ var port = process.env.PORT || 4000
 
 const bodyParser = require("body-parser")
 const { sendWelcomeEmail } = require("./emails")
-const { storeNewEmail } = require("./db")
+const { storeNewEmail, deleteEmail } = require("./db")
 
 app.use(
   bodyParser.json({
@@ -18,7 +18,6 @@ app.use(cors())
 app.get("/", (req, res) => res.status(201).send())
 
 app.post("/emails", async (req, res) => {
-  console.log("here", req.body)
   try {
     if (req.body) {
       const { email } = req.body
@@ -29,8 +28,18 @@ app.post("/emails", async (req, res) => {
     }
     res.status(201).send()
   } catch (e) {
-    console.log("error", e)
-    res.status(500).send()
+    res.status(500).send(e.message)
+  }
+})
+
+app.delete("/emails", async (req, res) => {
+  try {
+    const { email } = req.body
+    console.log(req.body)
+    await deleteEmail(email)
+    res.status(201).send()
+  } catch (e) {
+    res.status(500).send(e.message)
   }
 })
 

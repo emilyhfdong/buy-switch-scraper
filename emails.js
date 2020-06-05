@@ -3,12 +3,24 @@ const mailjet = require("node-mailjet").connect(
   "379ba05fd768d8020e63f275663f0512"
 )
 
-const formatNotificationEmail = ({ name, url }, inStock) =>
-  inStock
-    ? `<div><h1>ITS IN STOCK AT ${name.toUpperCase()}!! GO GO GO GO</h1><a href=${url} >BUY HERE</a></div>`
-    : `<div><h1>Sad times its no longer in stock at ${name.toUpperCase()}</h1><p>try again next time</p></div>`
+const FORM_URL = "https://buy-switch.netlify.app"
 
-const welcomeEmail = `<div><h1>You're on the list!</h1><p>We will send you emails whenever updates to Best Buy, The Source, Toys R Us, or EB Games</p></div>`
+const getUnsubscribeLink = (email) =>
+  `<a href=${FORM_URL}?email=${email} >unsubscribe</a>`
+
+const formatNotificationEmail = ({ name, url }, inStock, email) =>
+  inStock
+    ? `<div><h1>ITS IN STOCK AT ${name.toUpperCase()}!! GO GO GO GO</h1><a href=${url} >BUY HERE</a>${getUnsubscribeLink(
+        email
+      )}</div>`
+    : `<div><h1>Sad times its no longer in stock at ${name.toUpperCase()}</h1><p>try again next time</p>${getUnsubscribeLink(
+        email
+      )}</div>`
+
+const getWelcomeEmail = (email) =>
+  `<div><h1>You're on the list!</h1><p>We will send you emails whenever updates to Best Buy, The Source, Toys R Us, or EB Games</p>${getUnsubscribeLink(
+    email
+  )}</div>`
 
 const sendNotificationEmail = async (store, inStock, emailAddress) => {
   await mailjet.post("send", { version: "v3.1" }).request({
@@ -25,8 +37,8 @@ const sendNotificationEmail = async (store, inStock, emailAddress) => {
         Subject: inStock
           ? "🙌😱✨Switch is now in stock!✨😱🙌"
           : "😭Switch is no longer in stock😭",
-        TextPart: formatNotificationEmail(store, inStock),
-        HTMLPart: formatNotificationEmail(store, inStock),
+        TextPart: formatNotificationEmail(store, inStock, emailAddress),
+        HTMLPart: formatNotificationEmail(store, inStock, emailAddress),
         CustomID: Date.now().toString(),
       },
     ],
@@ -45,8 +57,8 @@ const sendWelcomeEmail = async (emailAddress) => {
           },
         ],
         Subject: "💕✨You're on the list!✨💕",
-        TextPart: welcomeEmail,
-        HTMLPart: welcomeEmail,
+        TextPart: getWelcomeEmail(emailAddress),
+        HTMLPart: getWelcomeEmail(emailAddress),
         CustomID: Date.now().toString(),
       },
     ],

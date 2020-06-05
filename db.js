@@ -27,7 +27,20 @@ const getUserEmails = async () => {
 }
 
 const storeNewEmail = async (email) => {
+  const existingEmails = await getUserEmails()
+  if (existingEmails.includes(email)) {
+    throw new Error("email already exists")
+  }
   await db.collection("users").add({ email })
+}
+
+const deleteEmail = async (email) => {
+  const usersCollection = await db
+    .collection("users")
+    .where("email", "==", email)
+    .get()
+
+  await db.collection("users").doc(usersCollection.docs[0].id).delete()
 }
 
 const getStoreAvailabilities = async () => {
@@ -48,4 +61,5 @@ module.exports = {
   storeNewEmail,
   getStoreAvailabilities,
   updateStoreAvailability,
+  deleteEmail,
 }
